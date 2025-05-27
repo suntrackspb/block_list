@@ -1,0 +1,33 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+start () {
+    TMP_DIR="/tmp/dnsmasq.d"
+    TMP_FILE="$TMP_DIR/domains.lst"
+    TMP_ALL="$TMP_DIR/all_domains.tmp"
+    mkdir -p "$TMP_DIR"
+    count=0
+
+    SOURCES="\
+https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Russia/inside-dnsmasq-nfset.lst \
+https://raw.githubusercontent.com/suntrackspb/block_list/main/domains.lst"
+
+    while true; do
+        if curl -m 3 github.com; then
+            > "$TMP_ALL"
+            for URL in $SOURCES; do
+                curl -fs "$URL" >> "$TMP_ALL"
+            done
+            sort "$TMP_ALL" | uniq > "$TMP_FILE"
+            break
+        else
+            echo "GitHub is not available. Check the internet availability [$count]"
+            count=$((count+1))
+        fi
+    done
+
+    if dnsmasq --conf-file="$TMP_FILE" --test 2>&1 | grep -q "syntax check OK"; then
+        /etc/init.d/dnsmasq restart
+    fi
+}
