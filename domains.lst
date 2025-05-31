@@ -1,3 +1,4 @@
 nftset=/discord.com/4#inet#fw4#vpn_domains
 nftset=/youtube.com/4#inet#fw4#vpn_domains
 nftset=/2ip.io/4#inet#fw4#vpn_domains
+nftset=/microsoft.com/4#inet#fw4#vpn_domains
